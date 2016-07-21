@@ -3,7 +3,10 @@ session_start();
 $verhalten = 0;
 
 if(!isset($_SESSION["username"]) and !isset($_GET["page"])) {
-    $verhalten = 0;
+    $verhalten = 1;
+}
+if(isset($_SESSION['username'])) {
+    $verhalten = 3;    
 }
 if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
     
@@ -34,7 +37,7 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
 <head>
     <title>Zonen Dings</title>
     <?php
-    if ($verhalten == 1) {
+    if ($verhalten == 1 or $verhalten == 3) {
     ?>    
     
     <meta http-equiv="refresh" content="3; URL=user.php"  />
@@ -65,6 +68,11 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
     ?>
     <p>Nutzer oder Passwort falsch. <a href="index.php">Zur&uuml;ck</a></p>
     <?php    
+    }
+    if ($verhalten == 3) {
+    ?>
+    <h2>Du warst bereits angemelddet. Wir leiten dich weiter...</h2>
+    <?php
     }
     ?>
 
