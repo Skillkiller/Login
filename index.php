@@ -3,7 +3,7 @@ session_start();
 $verhalten = 0;
 
 if(!isset($_SESSION["username"]) and !isset($_GET["page"])) {
-    $verhalten = 1;
+    $verhalten = 0;
 }
 if(isset($_SESSION['username'])) {
     $verhalten = 3;    
@@ -37,7 +37,7 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
 <head>
     <title>Zonen Dings</title>
     <?php
-    if ($verhalten == 1 or $verhalten == 3) {
+    if ($verhalten == 3 or $verhalten == 1) {
     ?>    
     
     <meta http-equiv="refresh" content="3; URL=user.php"  />
