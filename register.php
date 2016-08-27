@@ -1,47 +1,54 @@
 <?php
 error_reporting(0);
-include('head.php');
+include('headlogin.php');
 ?>
     <title>Neuer Account</title>
 
 <body>
-<div id="wrap">
-<div class="container">
     <?php 
     if (!isset($_GET["page"])) {
     ?>
 		
-        <form class="form-signin" method="post" action="register?page=2">
-			<h2 class="form-signin-heading">Registrierung</h2>
-			
-			<div class="form-group">
-            <label for="username">Username</label>
-			<input class="form-control" type="text" name="username" />
-			</div>
-			
-			<div class="form-group">
-            <label for="password1">Passwort</label>
-			<input class="form-control" type="password" name="password1" />
-			</div>
-			
-			<div class="form-group">
-            <label for="password2">Passwort wiederholen</label>
-			<input class="form-control" type="password" name="password2" />
-			</div>
-			<label>
-			<input name="rules" type="checkbox"> Ich akzeptiere die <a href="rules">Richtlinen</a>
-			</label>
-			
+ <div class="login">
+  <div class="heading">
+    <h2>Registrierung</h2>
+    <form method="post" action="register?page=2">
+	
 
-            <input class="btn btn-lg btn-primary btn-block" type="submit" value="Senden" />
+      <div class="input-group input-group-lg">
+        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <input type="text" name="username" class="form-control" placeholder="Username">
+          </div>
+		  
+		  <div class="input-group input-group-lg">
+          <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+          <input type="email" name="email" class="form-control" placeholder="E-Mail">
+        </div>
+
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+          <input type="password" name="password1" class="form-control" placeholder="Passwort">
+        </div>
+		
+		<div class="input-group input-group-lg">
+          <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+          <input type="password" name="password2" class="form-control" placeholder="Passwort wiederholung">
+        </div>
+		
+		<br>
+		
+		<div class="account">
+		Mit dem Absenden des Formulars bestätigst du, dass du die <a href="rules">Richtlinien </a> gelesen und akzeptiert hast.
+		</div>
+		
+        <button type="submit" class="float">Login</button>
+       </form>
+
+ 		</div>
+ </div>
         </form>
-</div>
-    </div><!-- Wrap Div end -->
-    <div id="footer">
-      <div class="container">
-        <p class="text-muted credit">Design by <a href="/user/hagakure">HAGAKURE</a>, Coding by <a href="/user/skillkiller">Skillkiller</a>. &copy; All rights reserverd 2016</p>
-      </div>
-    </div>
+	
+    <?php include('footer.php');?>
 </body>
 </html>
 
@@ -53,8 +60,9 @@ include('head.php');
         $user = $_POST["username"];
         $pw = md5($_POST["password1"]);
         $pw2 = md5($_POST["password2"]);
+		$email = $_POST["email"];
         
-		$fields = array('username', 'password1', 'password2', 'rules');
+		$fields = array('username', 'password1', 'password2');
 
 $error = false; 
 foreach($fields AS $fieldname) { 
@@ -70,6 +78,23 @@ foreach($fields AS $fieldname) {
   }
 }
 
+if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+    exit('<br /><div class="container">
+				  <div class="alert alert-danger" role="alert">
+				  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+				  <span class="sr-only">Fehler</span>
+				  Ungültige E-Mail. Gehe <a href="register">zurück</a>.
+				  </div>
+				  </div>');
+$select = mysqli_query($verbindung, "SELECT `email` FROM `user` WHERE `email` = '".$_POST['email']."'") or exit(mysqli_error());
+if(mysqli_num_rows($select))
+    exit('<br /><div class="container">
+				  <div class="alert alert-danger" role="alert">
+				  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+				  <span class="sr-only">Fehler</span>
+				  Diese E-Mail existiert bereits. Gehe <a href="register">zurück</a>.
+				  </div>
+				  </div>');
 
 if(!$error) { 
 
@@ -106,17 +131,25 @@ if(!$error) {
 				$ip = $_SERVER["REMOTE_ADDR"];
 				date_default_timezone_set('Europe/Berlin');
 				$date = date('Y-m-d H:i:s');
-				$eintrag = "INSERT INTO `user` (username, password, admin, ip, registerip, apikey, adminapikey, registerdate, lastlogin) VALUES ('$user', '$pw', 0, '$ip', '$ip', 0, 0, '$date', '0000-00-00 00:00:00')";
+				$eintrag = "INSERT INTO `user` (username, email, password, admin, ip, registerip, apikey, adminapikey, registerdate, lastlogin) VALUES ('$user', '$email', '$pw', 0, '$ip', '$ip', 0, 0, '$date', '0000-00-00 00:00:00')";
                 $eintragen = mysqli_query($verbindung, $eintrag);
 
                 if ($eintragen == true) {
-                    echo '<div class="container">
+                    echo '
+						<div class="container">
 						<div class="alert alert-success" role="success">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 						<span class="sr-only">Erfolgreich!</span>
-						Du hast dich erfolgreich registriert. <a href="index">Starte jetzt sofort</a>!
+						Du hast dich erfolgreich registriert. Damit du Zugriff auf das Control Panel hast, melde dich bitte an.
+					
 						</div>
-						</div> ';
+						</div>
+						<br><br>
+						<form action="index">
+						<center><input class="btn btn-info" type="submit" value="Zurück" /></center>
+						</form>
+
+						';
                 } else {
                     echo '<div class="container">
 						<div class="alert alert-danger" role="danger">

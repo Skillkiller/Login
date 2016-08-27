@@ -35,16 +35,28 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
 }
 ?>
 
-<?php include('head.php'); ?>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/css/custom_register.css">
+<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Quicksand:400,700|Questrial" rel="stylesheet" />
+<link href="css/fonts.css" rel="stylesheet" type="text/css" media="all" />
 
     <title>Startseite - Anmelden</title>
+	
+</head>
 	
 	
     <?php
     if ($verhalten == 1 or $verhalten == 3) {
     ?>    
     
-    <meta http-equiv="refresh" content="2; URL=user"  />
+    <meta http-equiv="refresh" content="0; URL=user"  />
         
     <?php    
     }
@@ -55,20 +67,29 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
     <?php 
     if ($verhalten == 0) {
     ?>		
-    <form class="form-signin" id="loginform" method="post" action="index?page=log">
-    <h2 class="form-signin-heading">Anmeldung</h2>
-		<div class="form-group">
-			<label for="username">Username:</label>
-			<input type="text" class="form-control" id="username" minlength="3" name="username" placeholder="Username" required>
-		</div>	
-		
-		<div class="form-group">
-        <label for="password">Passwort:</label>
-		<input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
-		</div>
-       <input class="btn btn-lg btn-primary btn-block" type="submit" value="Anmelden" name="login1" /><br>
-	   <center><div class="noacc"><a href="register">Noch keinen Account?</a></div> </center>
-    </form>
+	<div class="login">
+  <div class="heading">
+    <h2>Anmelden</h2>
+    <form id="loginform" method="post" action="index.php?page=log">
+
+      <div class="input-group input-group-lg">
+        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <input type="text" name="username" class="form-control" placeholder="Username">
+          </div>
+
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+          <input type="password" name="password" class="form-control" placeholder="Passwort">
+        </div>
+
+        <button type="submit" class="float">Login</button>
+       </form>
+	   
+	   <div class="account">
+	   <center><h3>Noch keinen Account?</h3>Dann jetzt schnell <a href="register">hier</a> kostenlos registrieren!</center>
+	   </div>
+ 		</div>
+ </div>
 	
 	<script>
 	$("#loginform").validate();
@@ -91,8 +112,10 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
 	$date = date('Y-m-d H:i:s');
 	$sql = "UPDATE user SET lastlogin='$date' WHERE username='$user' AND password='$password'";
 	$sql1 = "UPDATE user SET ip='$ip' WHERE username='$user' AND password='$password'";
+	$sql2 = "UPDATE user SET status='1' WHERE username='$user' AND password='$password'";
 	mysqli_query($verbindung, $sql);
 	mysqli_query($verbindung, $sql1);
+	mysqli_query($verbindung, $sql2);
 	?>
 	</div>
 
@@ -107,10 +130,10 @@ if (isset($_GET["page"]) && ($_GET["page"]) == "log") {
 		Die angegeben Daten sind falsch. Bitte überprüfe das Passwort, sowie den Username auf Richtigkeit.
 	</div>
 	
-	<form action="/index.php">
-    <input class="btn btn-info" type="submit" value="Zurück" />
+	<form action="index">
+    <center><input class="btn btn-info" type="submit" value="Zurück" /></center>
 	</form>
-	</div>
+	</div><br><br>
     <?php    
     }
     if ($verhalten == 3) {

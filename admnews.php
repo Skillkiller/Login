@@ -1,80 +1,13 @@
 <?php
-
-
-// ----------------------------------------------------------------------------------------------------
-// - Display Errors
-// ----------------------------------------------------------------------------------------------------
-ini_set('display_errors', 'On');
-ini_set('html_errors', 0);
-
-// ----------------------------------------------------------------------------------------------------
-// - Error Reporting
-// ----------------------------------------------------------------------------------------------------
-error_reporting(-1);
-
-// ----------------------------------------------------------------------------------------------------
-// - Shutdown Handler
-// ----------------------------------------------------------------------------------------------------
-function ShutdownHandler()
-{
-    if(@is_array($error = @error_get_last()))
-    {
-        return(@call_user_func_array('ErrorHandler', $error));
-    };
-
-    return(TRUE);
-};
-
-register_shutdown_function('ShutdownHandler');
-
-// ----------------------------------------------------------------------------------------------------
-// - Error Handler
-// ----------------------------------------------------------------------------------------------------
-function ErrorHandler($type, $message, $file, $line)
-{
-    $_ERRORS = Array(
-        0x0001 => 'E_ERROR',
-        0x0002 => 'E_WARNING',
-        0x0004 => 'E_PARSE',
-        0x0008 => 'E_NOTICE',
-        0x0010 => 'E_CORE_ERROR',
-        0x0020 => 'E_CORE_WARNING',
-        0x0040 => 'E_COMPILE_ERROR',
-        0x0080 => 'E_COMPILE_WARNING',
-        0x0100 => 'E_USER_ERROR',
-        0x0200 => 'E_USER_WARNING',
-        0x0400 => 'E_USER_NOTICE',
-        0x0800 => 'E_STRICT',
-        0x1000 => 'E_RECOVERABLE_ERROR',
-        0x2000 => 'E_DEPRECATED',
-        0x4000 => 'E_USER_DEPRECATED'
-    );
-
-    if(!@is_string($name = @array_search($type, @array_flip($_ERRORS))))
-    {
-        $name = 'E_UNKNOWN';
-    };
-
-    return(print(@sprintf("%s Error in file \xBB%s\xAB at line %d: %s\n", $name, @basename($file), $line, $message)));
-};
-
-$old_error_handler = set_error_handler("ErrorHandler");
-
-// other php code
-
-
-
 session_start();
 include(__DIR__ . "/config/Verbindungen.php");
 
-$username = $_SESSION['username'];
 $query = "SELECT admin FROM user";
-$execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
+$execute = mysqli_query($verbindung, $query);
 
 foreach ($execute as $row) {
-	$admin = $row["admin"];
-	if (isset($_SESSION["username"])) {
-        if ($admin > 0) {
+        if ($row["admin"] > 0) {
+			if (isset($_SESSION["username"])) {
 				$admin = $row["admin"];
 ?>
 
@@ -83,7 +16,7 @@ foreach ($execute as $row) {
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Admin Control Panel</title>
+  <title>User Control Panel</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/bootstrap.css">
@@ -143,18 +76,8 @@ foreach ($execute as $row) {
 
                 <p>
                   <?php echo $_SESSION['username'];?>
-				  <?php 
-	$username = $_SESSION['username'];
-	$query = "SELECT * FROM `user` WHERE username = '$username'";
-	$execute2 = mysqli_query($verbindung, $query) 
-	or die("Error: ".mysqli_error($verbindung));
-	
-	if ($execute2->num_rows > 0) {
-    // output data of each row
-    while($row = $execute2->fetch_assoc()) { ?>
-                  <small>Letzter Login: <?php echo $row["lastlogin"]; ?></small>
-				  <small>Mitglied seit: <?php echo $row["registerdate"]; ?></small>
-	<?php }}?>
+                  <small>Letzter Login: </small>
+				  <small>Mitglied seit: </small>
                 </p>
               </li>
 
@@ -200,8 +123,8 @@ foreach ($execute as $row) {
 	  
       <ul class="sidebar-menu">
         <li class="header">Menü</li>
-        <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Startseite</span></a></li>
-		<li><a href="admnews"><i class="fa fa-link"></i> <span>News</span></a></li>
+        <li><a href="admin"><i class="fa fa-link"></i> <span>Startseite</span></a></li>
+		<li class="active"><a href="admnews"><i class="fa fa-link"></i> <span>News</span></a></li>
 		<li><a href="adminapi"><i class="fa fa-link"></i> <span>Admin API</span></a></li>
 		<li><a href="usersearch"><i class="fa fa-link"></i> <span>Usersuche</span></a></li>
 		<li><a href="accountedit"><i class="fa fa-link"></i> <span>Accountbearbeitung</span></a></li>
@@ -213,75 +136,26 @@ foreach ($execute as $row) {
   <div class="content-wrapper">
     <section class="content-header">
       <h1>
-        Startseite
-        <small>Deine Account Informationen</small>
+        Admin News
+        <small>Alle administrativen Neuigkeiten von der Projektleitung</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Startseite</a></li>
-        <li class="active">ACP</li>
+        <li>ACP</li>
+		<li class="active">Admin News</li>
       </ol>
     </section>
 
  
 <section class="content">
-<div class="alert alert-info">
-<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-<b>WICHTIGE INFORMATION:</b>
-<p>Anbei erhälst du alle Informationen über deinen <b>administrativen Account</b>. Bitte bewahre deine Daten gut. Im Falle einer Weitergabe verliest laut den Richtlinien deinen Status "Administrator". Der Verlust ist unersetzbar und kann nicht wiederhergestellt werden.</p>
-</div>	
 
-<div class="alert alert-info">
-<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-<b>Information:</b>
-<p>Die Zahl unter Status haben folgende Eigenschaften.</p>
-<p> 1 = User ist online </p>
-<p> 0 = User ist offline </p>
-Der Spieler hat jedoch keinen Zugriff auf das ACP.
-</div>	
-	<table class="table table-condensed">
-	
-	<?php 
-	$query = "SELECT * FROM `user` WHERE username = '$username'";
-	$execute2 = mysqli_query($verbindung, $query) 
-	or die("Error: ".mysqli_error($verbindung));
-	
-	$row = $execute2->fetch_array(MYSQL_BOTH);
-	
-        
-	?>
-<tr>
-  <td><b>ID:</b></td>
-  <td><?php echo $row['id']; ?></td>
-  <td><b>Name:</b></td>
-  <td><?php echo $_SESSION["username"]; ?></td>
-  <td><b>E-Mail:</b></td>
-  <td><?php echo $row["email"]; ?></td>
-  <td><b>Admin:</b><td>
-  <td><?php echo $admin; ?></td>
-  <td><b>Letzte Aktivität:</b></td>
-  <td><?php echo $row["lastlogin"]; ?></td>
-<br>
-</tr>
-
-<tr>
-<td><b>API Key:</b></td>
-<td><?php echo $row["apikey"]; ?></td>
-<td><b>Admin API Key:</b></td>
-<td><?php echo $row["adminapikey"]; ?></td>
-<td><b>Register IP:</b></td>
-<td><?php echo $row["registerip"]; ?></td>
-<td><b>IP:</b></td>
-<td><?php echo $row["ip"]; ?></td>
-<td><b>Registierung:</b></td>
-<td><?php echo $row["registerdate"]; ?></td>
-<td><b>Status:</b></td>
-<td><?php echo $row["status"]; ?></td>
-</tr>
-      
-	</table>
 </section>
 </div>
-
+ <?php
+	
+ ?>
+  
+  
   
   
   <footer class="main-footer">
@@ -298,11 +172,8 @@ Der Spieler hat jedoch keinen Zugriff auf das ACP.
 <script src="dist/js/app.min.js"></script>
 </body>
 </html>
- <?php
-	    }
-} else {
-    echo "Keine Ergebnisse..";
+<?php  
 }
-
+}
 }
 ?>
