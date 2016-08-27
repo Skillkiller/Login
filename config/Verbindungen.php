@@ -1,7 +1,7 @@
 <?php
-$verbindung = mysql_connect("localhost", "user", "password")
+$verbindung = mysqli_connect("localhost", "root", "samp")
 or die ("Fehler bei der Anmeldung");
 
-mysql_select_db("datenbank")
+mysqli_select_db($verbindung, "Datenbank")
 or die ("Verbindung zur Datenbank gescheitert");
 ?>
