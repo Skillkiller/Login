@@ -68,14 +68,13 @@ session_start();
 include(__DIR__ . "/config/Verbindungen.php");
 
 $username = $_SESSION['username'];
-$query = "SELECT admin FROM user";
+$query = "SELECT `admin`,`username` FROM `user` WHERE `username` = '$username'";
 $execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
 
-foreach ($execute as $row) {
-	$admin = $row["admin"];
-	if (isset($_SESSION["username"])) {
-        if ($admin > 0) {
-				$admin = $row["admin"];
+$row = $execute->fetch_array(MYSQL_BOTH);
+
+if ($row["admin"] > 0 and $row["username"] == $username) {
+	
 ?>
 
 <!DOCTYPE html>
@@ -241,7 +240,7 @@ Der Spieler hat jedoch keinen Zugriff auf das ACP.
 	<table class="table table-condensed">
 	
 	<?php 
-	$query = "SELECT * FROM `user` WHERE username = '$username'";
+	$query = "SELECT * FROM `user` WHERE `username` = '$username'"; 
 	$execute2 = mysqli_query($verbindung, $query) 
 	or die("Error: ".mysqli_error($verbindung));
 	
@@ -257,7 +256,7 @@ Der Spieler hat jedoch keinen Zugriff auf das ACP.
   <td><b>E-Mail:</b></td>
   <td><?php echo $row["email"]; ?></td>
   <td><b>Admin:</b><td>
-  <td><?php echo $admin; ?></td>
+  <td><?php echo $row["admin"]; ?></td>
   <td><b>Letzte Aktivität:</b></td>
   <td><?php echo $row["lastlogin"]; ?></td>
 <br>
@@ -299,10 +298,12 @@ Der Spieler hat jedoch keinen Zugriff auf das ACP.
 </body>
 </html>
  <?php
-	    }
+ 
 } else {
-    echo "Keine Ergebnisse..";
+    echo "Du bist leider nicht Berechtigt";
+	/*
+	Bitte vervollständigen!
+	*/
 }
 
-}
 ?>
