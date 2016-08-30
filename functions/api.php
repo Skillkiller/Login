@@ -1,9 +1,8 @@
 <?php
-
+include(__DIR__ . "/../config/Verbindungen.php");
 function randomstring($length = 16) {
   // $chars - String aller erlaubten Zahlen
-  $chars = "abcdefghijklmnopqrstuvwxyz
-            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
   // Funktionsstart
   srand((double)microtime()*1000000);
   $i = 0; // Counter auf null
@@ -44,16 +43,50 @@ function hasapi($username) {
 	}
 }
 
+function isapifree($key) {
+	$control = 0;
+	$query = "SELECT `username`,`apikey` FROM `user` WHERE `apikey` = '$key'";
+	$ergebnis = mysqli_query($verbindung, $abfrage);
+	
+	while ($row = mysqli_fetch_object($ergebnis))
+	{
+		$control++;
+	}
+	
+	if ($control != 0) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
 function setapi($username) {
-	if hasapi($username) {
+	if (hasapi($username)) {
 		return getapi($username);
 	} else {
-		$pass = randomstring(16);
-		$query = "UPDATE `$datenbank`.`user` SET `apikey` = '$pass' WHERE `user`.`username` = '$username'";
-		$execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
+		$wait = true;
+		$versuch = 1;
 		
-		$row = $execute->fetch_array(MYSQL_BOTH);
-		return getapi($username);
+		while (($wait) && ($versuch < 5)) {
+			$key = randomstring(16);
+			
+			if (isapifree($key)) {
+				$wait = false;
+			}
+			
+			$versuch++;
+			
+		}
+		
+		if ($wait == false) {
+			$query = "UPDATE `$datenbank`.`user` SET `apikey` = '$key' WHERE `user`.`username` = '$username'";
+			$execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
+			
+			$row = $execute->fetch_array(MYSQL_BOTH);
+			return getapi($username);
+		} else {
+			user_error("Nach Versuch $versuch wurde kein freier String gefunden", E_USER_ERROR);
+		}
 	}
 }
 

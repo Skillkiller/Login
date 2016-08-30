@@ -131,7 +131,29 @@ if(!$error) {
 				$ip = $_SERVER["REMOTE_ADDR"];
 				date_default_timezone_set('Europe/Berlin');
 				$date = date('Y-m-d H:i:s');
-				$eintrag = "INSERT INTO `user` (username, email, password, admin, ip, registerip, apikey, adminapikey, registerdate, lastlogin) VALUES ('$user', '$email', '$pw', 0, '$ip', '$ip', 0, 0, '$date', '0000-00-00 00:00:00')";
+				
+				include(__DIR__ . "/functions/api.php");
+				
+				$wait = true;
+				$versuch = 1;
+		
+				while (($wait) && ($versuch < 5)) {
+					$key = randomstring(16);
+			
+					if (isapifree($key)) {
+						$wait = false;
+					}
+			
+					$versuch++;
+			
+				}
+				
+				
+				if ($wait) {
+					user_error("Nach Versuch $versuch wurde kein freier String gefunden", E_USER_ERROR);
+				}
+				
+				$eintrag = "INSERT INTO `user` (username, email, password, admin, ip, registerip, apikey, adminapikey, registerdate, lastlogin) VALUES ('$user', '$email', '$pw', 0, '$ip', '$ip', '$key', 0, '$date', '0000-00-00 00:00:00')";
                 $eintragen = mysqli_query($verbindung, $eintrag);
 
                 if ($eintragen == true) {
@@ -158,7 +180,7 @@ if(!$error) {
 						Es ist ein Fehler aufgetreten. Um das Problem zu lösen, schreibe bitte Skillkiller mit der Message an:
 						<br><br>
 						---------- REGISTER ERROR ------------
-						<br>
+						<br>' . mysqli_error($verbindung) . '<br>
 						---------------------------------------------------
 						</div>
 						</div>';
