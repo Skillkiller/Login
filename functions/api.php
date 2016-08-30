@@ -62,34 +62,6 @@ function isapifree($key) {
         return true;
     }
 }
-
-function resetapi($username) {
-	include(__DIR__ . "/../config/Verbindungen.php");
-	$oldkey = getapi($username);
-	
-	$wait = true;
-	$versuch = 1;
-	
-	while (($wait) && ($versuch < 5)) {
-		$key = randomstring(16);
-		
-		if ((isapifree($key)) && $key != $oldkey) {
-			$wait = false;
-		}
-		
-		$versuch++;
-	}
-	
-	if ($wait) {
-		user_error("Nach Versuch $versuch wurde kein freier String gefunden", E_USER_ERROR);
-	} else {
-		$query = "UPDATE `$datenbank`.`user` SET `apikey` = '$key' WHERE `user`.`username` = '$username'";
-        $execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
-          
-        $row = $execute->fetch_array(MYSQL_BOTH);
-        return getapi($username);
-	}
-}
  
 function setapi($username) {
 	include(__DIR__ . "/../config/Verbindungen.php");
