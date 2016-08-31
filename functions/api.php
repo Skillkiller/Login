@@ -12,7 +12,11 @@ function randomstring($length = 16) {
     // Ausf&uuml;hren von substr zum w?hlen eines Zeichens
     $tmp = substr($chars, $num, 1);
     // Anh?ngen des Zeichens
-    $pass = $pass . $tmp;
+	if (empty($pass)) {
+		$pass = $tmp;
+	} else {
+		$pass = $pass . $tmp;
+	}
     // $i++ um den Counter um eins zu erh?hen
     $i++;
   }
@@ -49,7 +53,7 @@ function isapifree($key) {
 	include(__DIR__ . "/../config/Verbindungen.php");
     $control = 0;
     $query = "SELECT `username`,`apikey` FROM `user` WHERE `apikey` = '$key'";
-    $ergebnis = mysqli_query($verbindung, $abfrage);
+    $ergebnis = mysqli_query($verbindung, $query);
    
     while ($row = mysqli_fetch_object($ergebnis))
     {
