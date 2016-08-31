@@ -83,10 +83,9 @@ function resetapi($username) {
 	if ($wait) {
 		user_error("Nach Versuch $versuch wurde kein freier String gefunden", E_USER_ERROR);
 	} else {
-		$query = "UPDATE `$datenbank`.`user` SET `apikey` = '$key' WHERE `user`.`username` = '$username'";
+		$query = "UPDATE `user` SET `apikey` = '$key' WHERE `user`.`username` = '$username'";
         $execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
-          
-        $row = $execute->fetch_array(MYSQL_BOTH);
+		
         return getapi($username);
 	}
 }
@@ -111,7 +110,7 @@ function setapi($username) {
         }
        
         if ($wait == false) {
-            $query = "UPDATE `$datenbank`.`user` SET `apikey` = '$key' WHERE `user`.`username` = '$username'";
+            $query = "UPDATE `user` SET `apikey` = '$key' WHERE `user`.`username` = '$username'";
             $execute = mysqli_query($verbindung, $query) or die("Error: ".mysqli_error($verbindung));
            
             $row = $execute->fetch_array(MYSQL_BOTH);
