@@ -1,6 +1,7 @@
 <?php
 session_start();
 include(__DIR__ . "/config/Verbindungen.php");
+include(__DIR__ . "/functions/api.php");
 if (isset($_SESSION["username"])) {
 
 ?>
@@ -149,7 +150,8 @@ if (isset($_SESSION["username"])) {
 
  
     <section class="content">
-       Hier kannst du bald deine Informationen abrufen können.
+       <p>Hier kannst du bald deine Informationen abrufen können.</p>
+	   <p>API Key: <?php echo resetapi($_SESSION['username']);?>
     </section>
   </div>
   
